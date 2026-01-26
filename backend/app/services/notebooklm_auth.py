@@ -16,6 +16,18 @@ from typing import Dict, Optional
 from datetime import datetime
 
 
+def _is_headless_mode() -> bool:
+    """
+    Check if browser should run in headless mode.
+
+    Returns True for production environments (Railway, Render, etc.)
+    Returns False for local development to show visible browser.
+    """
+    from app.config import get_settings
+    settings = get_settings()
+    return settings.browser_headless.lower() in ("true", "1", "yes")
+
+
 class NotebookLMAuth:
     """Handle NotebookLM authentication via browser-based Google OAuth."""
 
@@ -71,15 +83,21 @@ class NotebookLMAuth:
             browser_profile_dir.mkdir(parents=True, exist_ok=True)
 
             # Launch browser with persistent context (appears more like a real browser to Google)
+            headless = _is_headless_mode()
+
             async with async_playwright() as p:
                 # Use launch_persistent_context instead of launch + new_context
                 # This makes the browser appear as a normal user browser, not automation
                 context = await p.chromium.launch_persistent_context(
                     user_data_dir=str(browser_profile_dir),
-                    headless=False,
+                    headless=headless,
                     args=[
                         "--disable-blink-features=AutomationControlled",  # Hide automation
                         "--password-store=basic",  # Avoid keychain issues
+                        "--no-sandbox",  # Required for Docker/Railway
+                        "--disable-setuid-sandbox",  # Required for Docker/Railway
+                        "--disable-dev-shm-usage",  # Overcome limited resource problems
+                        "--disable-gpu",  # Not needed in headless
                     ],
                     ignore_default_args=["--enable-automation"],  # Remove automation flag
                 )

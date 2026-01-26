@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     secret_key: str
     frontend_url: str = "http://localhost:3000"
 
+    # NotebookLM Browser Settings
+    # Set to "true" in production (Railway/Render), "false" locally for visible browser
+    browser_headless: str = "false"
+
     class Config:
         env_file = ".env"
 
