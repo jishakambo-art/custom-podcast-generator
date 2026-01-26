@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Environment variables (contains sensitive API keys)
+.env
+.env.local
+.env.*.local
+
+# NotebookLM credentials (contains user authentication data)
+.notebooklm_credentials/
+
+# Logs
+*.log
+backend.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+test_*.py
+*.pyc
