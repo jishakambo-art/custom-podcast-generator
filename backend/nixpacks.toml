@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["python312", "python312Packages.pip", "xorg.xvfb", "gcc", "pkg-config", "openssl"]
+aptPkgs = ["xvfb"]
 
 [start]
 cmd = "./setup_and_start.sh"
