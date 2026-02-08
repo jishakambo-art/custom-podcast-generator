@@ -61,6 +61,8 @@ async def get_schedule(
     """Get daily generation schedule preferences."""
     prefs = demo_store.get_user_preferences(user_id)
 
+    print(f"[SCHEDULE GET] User {user_id} - Retrieved preferences: daily_enabled={prefs.get('daily_generation_enabled')}, time={prefs.get('generation_time')}")
+
     if not prefs:
         # Return defaults
         return SchedulePreferences(
@@ -76,11 +78,15 @@ async def get_schedule(
     else:
         time_str = str(gen_time)
 
-    return SchedulePreferences(
+    result = SchedulePreferences(
         daily_generation_enabled=prefs.get("daily_generation_enabled", False),
         generation_time=time_str,
         timezone=prefs.get("timezone", "America/Los_Angeles"),
     )
+
+    print(f"[SCHEDULE GET] Returning: enabled={result.daily_generation_enabled}, time={result.generation_time}")
+
+    return result
 
 
 @router.put("/schedule", response_model=SchedulePreferences)
@@ -90,6 +96,8 @@ async def update_schedule(
     settings: Settings = Depends(get_settings),
 ):
     """Update daily generation schedule."""
+    print(f"[SCHEDULE PUT] User {user_id} - Received update: enabled={schedule.daily_generation_enabled}, time={schedule.generation_time}, tz={schedule.timezone}")
+
     update_data = {}
 
     if schedule.daily_generation_enabled is not None:
@@ -109,7 +117,9 @@ async def update_schedule(
     if schedule.timezone is not None:
         update_data["timezone"] = schedule.timezone
 
+    print(f"[SCHEDULE PUT] Updating with data: {update_data}")
     updated_prefs = demo_store.update_user_preferences(user_id, update_data)
+    print(f"[SCHEDULE PUT] After update - daily_enabled={updated_prefs.get('daily_generation_enabled')}")
 
     if not updated_prefs:
         raise HTTPException(status_code=404, detail="Preferences not found")

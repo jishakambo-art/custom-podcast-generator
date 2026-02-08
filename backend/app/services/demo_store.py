@@ -171,8 +171,11 @@ def get_user_preferences(user_id: str) -> Dict:
 def update_user_preferences(user_id: str, updates: Dict) -> Dict:
     """Update user preferences."""
     prefs = get_user_preferences(user_id)
+    print(f"[DEMO_STORE] Before update - User {user_id}: daily_enabled={prefs.get('daily_generation_enabled')}")
+    print(f"[DEMO_STORE] Applying updates: {updates}")
     prefs.update(updates)
     prefs["updated_at"] = datetime.utcnow().isoformat()
+    print(f"[DEMO_STORE] After update - User {user_id}: daily_enabled={prefs.get('daily_generation_enabled')}")
     return prefs
 
 

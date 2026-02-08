@@ -61,9 +61,12 @@ async def check_and_generate_for_all_users():
     # Check which users need generation now
     for user_prefs in users_with_schedule:
         user_id = user_prefs["user_id"]
+        print(f"[SCHEDULER] Checking user {user_id} - enabled={user_prefs.get('daily_generation_enabled')}, time={user_prefs.get('generation_time')}")
         if should_generate_now(user_prefs):
             print(f"[SCHEDULER] User {user_id} is due for generation")
             users_to_generate.append(user_id)
+        else:
+            print(f"[SCHEDULER] User {user_id} is NOT due for generation yet")
 
     # Generate podcasts for all matched users
     if users_to_generate:
