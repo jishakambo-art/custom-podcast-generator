@@ -227,3 +227,81 @@ async def revoke_notebooklm(
 
     result = await notebooklm_auth.revoke_authentication(user_id)
     return result
+
+
+@router.post("/notebooklm/upload-credentials")
+async def upload_notebooklm_credentials(
+    credentials_data: dict,
+    user_id: str = Depends(get_current_user),
+):
+    """
+    Upload NotebookLM credentials from desktop app.
+
+    This endpoint receives credentials that were generated locally
+    via the desktop app's browser automation.
+
+    Expected payload:
+    {
+        "user_id": "user-id",
+        "credentials": {
+            "cookies": [...],
+            "origins": [...]
+        }
+    }
+    """
+    from app.services.notebooklm_auth import notebooklm_auth
+    import json
+    from pathlib import Path
+
+    try:
+        # Verify user_id matches authenticated user
+        if credentials_data.get('user_id') != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="User ID mismatch"
+            )
+
+        credentials = credentials_data.get('credentials')
+        if not credentials:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No credentials provided"
+            )
+
+        # Save credentials to user's file
+        creds_path = notebooklm_auth._get_user_creds_path(user_id)
+        creds_path.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(creds_path, 'w') as f:
+            json.dump(credentials, f, indent=2)
+
+        # Set restrictive permissions
+        creds_path.chmod(0o600)
+
+        # Save metadata
+        from datetime import datetime
+        metadata = {
+            "user_id": user_id,
+            "authenticated": True,
+            "authenticated_at": datetime.utcnow().isoformat(),
+            "credentials_path": str(creds_path),
+        }
+
+        metadata_path = notebooklm_auth.credentials_dir / f"{user_id}_meta.json"
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata, f, indent=2)
+
+        # Update cache
+        notebooklm_auth._auth_cache[user_id] = metadata
+
+        return {
+            "status": "success",
+            "message": "Credentials uploaded successfully",
+            "authenticated": True,
+        }
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to upload credentials: {str(e)}"
+        )
