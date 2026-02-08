@@ -77,6 +77,19 @@ export default function NotebookLMPage() {
           </p>
         </div>
 
+        {/* What is NotebookLM */}
+        <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg mb-6">
+          <h2 className="text-lg font-semibold text-blue-900 mb-3">
+            What is NotebookLM?
+          </h2>
+          <p className="text-blue-800 text-sm mb-3">
+            NotebookLM is Google's AI-powered research assistant that can generate high-quality podcast-style audio overviews from your content. It creates natural, engaging conversations between two AI hosts discussing the topics you provide.
+          </p>
+          <p className="text-blue-800 text-sm">
+            DailyBrief uses NotebookLM to automatically transform your daily news sources, RSS feeds, and topics into a personalized podcast that sounds like real hosts having an informed discussion about the content you care about.
+          </p>
+        </div>
+
         {isLoading && (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
@@ -132,10 +145,6 @@ export default function NotebookLMPage() {
                     </svg>
                     Download Desktop App (Mac)
                   </a>
-
-                  <p className="mt-3 text-sm text-gray-600 text-center">
-                    Windows version coming soon
-                  </p>
                 </div>
 
                 <div className="mt-8 p-4 bg-blue-50 rounded-lg">
