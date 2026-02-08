@@ -1,0 +1,27 @@
+{
+  "name": "dailybrief-setup",
+  "productName": "DailyBrief Setup",
+  "version": "1.0.0",
+  "description": "Setup utility for connecting NotebookLM to DailyBrief",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "keywords": ["podcast", "notebooklm", "automation"],
+  "author": "DailyBrief",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.11.1",
+    "@electron-forge/maker-dmg": "^7.11.1",
+    "@electron-forge/maker-zip": "^7.11.1",
+    "electron": "^40.2.1"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.95.3",
+    "node-fetch": "^3.3.2",
+    "playwright": "^1.58.2"
+  }
+}

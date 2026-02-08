@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build output
+out/
+dist/
+
+# Electron
+*.dmg
+*.zip
+*.app
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Credentials (for local testing)
+notebooklm_credentials/

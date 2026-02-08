@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://ykkjvvntrhujzdzthxfb.supabase.co https://hackathon-production-f662.up.railway.app https://custompodcast.vercel.app">
+  <title>DailyBrief Setup</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">🎙️</div>
+      <h1>DailyBrief Setup</h1>
+      <p class="subtitle">Connect your NotebookLM account to enable automated podcast generation</p>
+    </div>
+
+    <div id="auth-section" class="section">
+      <div class="card">
+        <h2>Step 1: Sign In with Google</h2>
+        <p>Sign in to connect your DailyBrief account</p>
+        <button id="sign-in-btn" class="btn btn-primary">
+          <span class="btn-icon">🔐</span>
+          Sign in with Google
+        </button>
+        <div id="auth-status" class="status hidden"></div>
+      </div>
+    </div>
+
+    <div id="notebooklm-section" class="section hidden">
+      <div class="card">
+        <h2>Step 2: Connect NotebookLM</h2>
+        <p>Authenticate with NotebookLM to enable podcast generation</p>
+
+        <div class="info-box">
+          <p><strong>What happens next:</strong></p>
+          <ol>
+            <li>A browser window will open</li>
+            <li>Sign in to NotebookLM with your Google account</li>
+            <li>Wait for the page to load completely</li>
+            <li>The window will close automatically</li>
+          </ol>
+        </div>
+
+        <button id="connect-notebooklm-btn" class="btn btn-primary">
+          <span class="btn-icon">🎙️</span>
+          Connect NotebookLM
+        </button>
+        <div id="notebooklm-status" class="status hidden"></div>
+      </div>
+    </div>
+
+    <div id="complete-section" class="section hidden">
+      <div class="card card-success">
+        <div class="success-icon">✓</div>
+        <h2>Setup Complete!</h2>
+        <p>Your NotebookLM account is now connected.</p>
+        <p class="completion-message">
+          Daily podcasts will be automatically generated at 7am PT.
+          You can now close this app and manage your sources on the web.
+        </p>
+        <button id="open-web-app-btn" class="btn btn-secondary">
+          <span class="btn-icon">🌐</span>
+          Open Web App
+        </button>
+        <button id="close-app-btn" class="btn btn-text">
+          Close App
+        </button>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>DailyBrief v1.0.0</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
