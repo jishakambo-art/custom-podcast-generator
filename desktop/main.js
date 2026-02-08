@@ -28,6 +28,24 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
 
+  // Block unnecessary permissions
+  app.on('web-contents-created', (event, contents) => {
+    contents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+      // Only allow necessary permissions
+      const allowedPermissions = [
+        'notifications',
+        // Add other needed permissions here
+      ];
+
+      if (allowedPermissions.includes(permission)) {
+        callback(true);
+      } else {
+        console.log(`Blocking permission request: ${permission}`);
+        callback(false);
+      }
+    });
+  });
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();
@@ -35,8 +53,33 @@ app.whenReady().then(() => {
   });
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+app.on('window-all-closed', async () => {
+  // Clean up any open browser instances
+  if (currentBrowser) {
+    try {
+      await currentBrowser.close();
+    } catch (err) {
+      console.error('Error closing browser:', err);
+    }
+    currentBrowser = null;
+    currentContext = null;
+  }
+
+  // Quit the app completely on all platforms (including macOS)
+  app.quit();
+});
+
+// Ensure cleanup on app quit
+app.on('before-quit', async (event) => {
+  if (currentBrowser) {
+    event.preventDefault();
+    try {
+      await currentBrowser.close();
+    } catch (err) {
+      console.error('Error closing browser on quit:', err);
+    }
+    currentBrowser = null;
+    currentContext = null;
     app.quit();
   }
 });
@@ -70,7 +113,11 @@ ipcMain.handle('authenticate-notebooklm', async (event, userId) => {
 
     const context = await browser.newContext({
       ignoreHTTPSErrors: true,
+      permissions: [], // Don't grant any permissions by default
     });
+
+    // Block unnecessary permissions in Playwright browser
+    await context.grantPermissions([]);  // Empty array = no permissions
 
     currentContext = context;
 

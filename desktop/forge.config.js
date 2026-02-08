@@ -3,6 +3,8 @@ module.exports = {
     name: 'DailyBrief Setup',
     executableName: 'dailybrief-setup',
     asar: true,
+    // Don't include any permission descriptions - we don't need them
+    // This prevents macOS from asking for Bluetooth, Camera, etc.
   },
   makers: [
     {
