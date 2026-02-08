@@ -85,14 +85,22 @@ export default function GenerationDetailPage({
                 <div>
                   <p className="text-gray-700">Scheduled</p>
                   <p className="font-medium text-gray-900">
-                    {new Date(generation.scheduled_at).toLocaleString()}
+                    {new Date(generation.scheduled_at).toLocaleString("en-US", {
+                      timeZone: "America/Los_Angeles",
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })} PST
                   </p>
                 </div>
                 {generation.started_at && (
                   <div>
                     <p className="text-gray-700">Started</p>
                     <p className="font-medium text-gray-900">
-                      {new Date(generation.started_at).toLocaleString()}
+                      {new Date(generation.started_at).toLocaleString("en-US", {
+                        timeZone: "America/Los_Angeles",
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })} PST
                     </p>
                   </div>
                 )}
@@ -100,7 +108,11 @@ export default function GenerationDetailPage({
                   <div>
                     <p className="text-gray-700">Completed</p>
                     <p className="font-medium text-gray-900">
-                      {new Date(generation.completed_at).toLocaleString()}
+                      {new Date(generation.completed_at).toLocaleString("en-US", {
+                        timeZone: "America/Los_Angeles",
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })} PST
                     </p>
                   </div>
                 )}

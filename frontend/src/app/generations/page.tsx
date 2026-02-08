@@ -87,10 +87,16 @@ export default function GenerationsPage() {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
+                      timeZone: "America/Los_Angeles",
                     })}
                   </p>
                   <p className="text-sm text-gray-700">
-                    {new Date(gen.scheduled_at).toLocaleTimeString()}
+                    {new Date(gen.scheduled_at).toLocaleTimeString("en-US", {
+                      timeZone: "America/Los_Angeles",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    })} PST
                   </p>
                 </div>
                 <span
