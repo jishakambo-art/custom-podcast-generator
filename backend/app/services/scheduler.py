@@ -13,7 +13,8 @@ def should_generate_now(user_prefs: Dict) -> bool:
     """
     Check if podcast should be generated now for this user.
 
-    Returns True if current time matches user's scheduled time (within a 1-minute window).
+    Returns True if current time is within 5 minutes after the scheduled time.
+    This allows the cron job (running every 5 minutes) to catch scheduled generations.
     """
     if not user_prefs.get("daily_generation_enabled", False):
         return False
@@ -26,10 +27,7 @@ def should_generate_now(user_prefs: Dict) -> bool:
     now_utc = datetime.utcnow().replace(tzinfo=pytz.UTC)
     now_user_tz = now_utc.astimezone(user_tz)
 
-    # Check if we're within 1 minute of scheduled time
-    current_hour = now_user_tz.hour
-    current_minute = now_user_tz.minute
-
+    # Parse scheduled time
     if isinstance(scheduled_time, Time):
         scheduled_hour = scheduled_time.hour
         scheduled_minute = scheduled_time.minute
@@ -39,8 +37,23 @@ def should_generate_now(user_prefs: Dict) -> bool:
         scheduled_hour = int(parts[0])
         scheduled_minute = int(parts[1])
 
-    # Match if we're at the exact hour:minute
-    return (current_hour == scheduled_hour and current_minute == scheduled_minute)
+    # Create scheduled datetime for today
+    scheduled_datetime = now_user_tz.replace(
+        hour=scheduled_hour,
+        minute=scheduled_minute,
+        second=0,
+        microsecond=0
+    )
+
+    # Check if we're within 5 minutes after the scheduled time
+    time_diff_minutes = (now_user_tz - scheduled_datetime).total_seconds() / 60
+
+    # Generate if we're between 0 and 5 minutes past the scheduled time
+    should_run = 0 <= time_diff_minutes < 5
+
+    print(f"[SCHEDULER] Time check - Current: {now_user_tz.strftime('%H:%M')}, Scheduled: {scheduled_hour:02d}:{scheduled_minute:02d}, Diff: {time_diff_minutes:.1f} min, Should run: {should_run}")
+
+    return should_run
 
 
 async def check_and_generate_for_all_users():
@@ -48,7 +61,7 @@ async def check_and_generate_for_all_users():
     Check all users with daily generation enabled and generate podcasts
     for those whose scheduled time has arrived.
 
-    This function should be called every minute by a cron job.
+    This function should be called every 5 minutes by a cron job.
     """
     settings = get_settings()
     users_to_generate = []
@@ -62,6 +75,18 @@ async def check_and_generate_for_all_users():
     for user_prefs in users_with_schedule:
         user_id = user_prefs["user_id"]
         print(f"[SCHEDULER] Checking user {user_id} - enabled={user_prefs.get('daily_generation_enabled')}, time={user_prefs.get('generation_time')}")
+
+        # Check if already generated today
+        recent_logs = demo_store.get_generation_logs(user_id, limit=1)
+        if recent_logs:
+            last_gen = recent_logs[0]
+            last_gen_date = datetime.fromisoformat(last_gen["scheduled_at"]).date()
+            today = datetime.utcnow().date()
+
+            if last_gen_date == today:
+                print(f"[SCHEDULER] User {user_id} already has a generation today - skipping")
+                continue
+
         if should_generate_now(user_prefs):
             print(f"[SCHEDULER] User {user_id} is due for generation")
             users_to_generate.append(user_id)
