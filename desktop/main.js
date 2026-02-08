@@ -112,17 +112,23 @@ ipcMain.handle('complete-notebooklm-auth', async (event, userId) => {
     console.log('Completing NotebookLM authentication for user:', userId);
 
     const credentialsDir = path.join(app.getPath('userData'), 'notebooklm_credentials');
+    await fs.mkdir(credentialsDir, { recursive: true });
+
     const credentialsPath = path.join(credentialsDir, `${userId}.json`);
+
+    console.log('Saving credentials to:', credentialsPath);
 
     // Save storage state (cookies, localStorage, etc.)
     await currentContext.storageState({ path: credentialsPath });
+
+    console.log('Credentials file saved');
 
     // Close browser
     await currentBrowser.close();
     currentBrowser = null;
     currentContext = null;
 
-    console.log('Authentication completed, credentials saved');
+    console.log('Browser closed, authentication completed');
 
     return {
       success: true,
@@ -147,13 +153,25 @@ ipcMain.handle('complete-notebooklm-auth', async (event, userId) => {
 ipcMain.handle('upload-credentials', async (event, { userId, token, apiUrl }) => {
   try {
     console.log('Uploading credentials to server for user:', userId);
+    console.log('API URL:', apiUrl);
 
     const credentialsDir = path.join(app.getPath('userData'), 'notebooklm_credentials');
     const credentialsPath = path.join(credentialsDir, `${userId}.json`);
 
+    console.log('Reading credentials from:', credentialsPath);
+
+    // Check if file exists
+    try {
+      await fs.access(credentialsPath);
+    } catch (err) {
+      throw new Error(`Credentials file not found at ${credentialsPath}. Make sure you completed the NotebookLM sign-in.`);
+    }
+
     // Read credentials file
     const credentialsData = await fs.readFile(credentialsPath, 'utf8');
     const credentials = JSON.parse(credentialsData);
+
+    console.log('Credentials loaded, uploading to server...');
 
     // Upload to server
     const response = await fetch(`${apiUrl}/auth/notebooklm/upload-credentials`, {
@@ -168,14 +186,24 @@ ipcMain.handle('upload-credentials', async (event, { userId, token, apiUrl }) =>
       }),
     });
 
+    console.log('Server response status:', response.status);
+
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Failed to upload credentials');
+      const errorText = await response.text();
+      console.error('Server error response:', errorText);
+      let errorDetail;
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorDetail = errorJson.detail;
+      } catch {
+        errorDetail = errorText;
+      }
+      throw new Error(errorDetail || 'Failed to upload credentials');
     }
 
     const result = await response.json();
 
-    console.log('Credentials uploaded successfully');
+    console.log('Credentials uploaded successfully:', result);
 
     return {
       success: true,

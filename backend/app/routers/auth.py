@@ -254,8 +254,12 @@ async def upload_notebooklm_credentials(
     from pathlib import Path
 
     try:
+        print(f"[UPLOAD] Received credentials upload for user: {user_id}")
+        print(f"[UPLOAD] Payload user_id: {credentials_data.get('user_id')}")
+
         # Verify user_id matches authenticated user
         if credentials_data.get('user_id') != user_id:
+            print(f"[UPLOAD] User ID mismatch! Authenticated: {user_id}, Payload: {credentials_data.get('user_id')}")
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="User ID mismatch"
@@ -263,20 +267,27 @@ async def upload_notebooklm_credentials(
 
         credentials = credentials_data.get('credentials')
         if not credentials:
+            print(f"[UPLOAD] No credentials in payload!")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="No credentials provided"
             )
 
+        print(f"[UPLOAD] Credentials payload has keys: {list(credentials.keys())}")
+
         # Save credentials to user's file
         creds_path = notebooklm_auth._get_user_creds_path(user_id)
         creds_path.parent.mkdir(parents=True, exist_ok=True)
+
+        print(f"[UPLOAD] Saving credentials to: {creds_path}")
 
         with open(creds_path, 'w') as f:
             json.dump(credentials, f, indent=2)
 
         # Set restrictive permissions
         creds_path.chmod(0o600)
+
+        print(f"[UPLOAD] Credentials file saved with size: {creds_path.stat().st_size} bytes")
 
         # Save metadata
         from datetime import datetime
@@ -291,8 +302,12 @@ async def upload_notebooklm_credentials(
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=2)
 
+        print(f"[UPLOAD] Metadata saved to: {metadata_path}")
+
         # Update cache
         notebooklm_auth._auth_cache[user_id] = metadata
+
+        print(f"[UPLOAD] Successfully uploaded credentials for user: {user_id}")
 
         return {
             "status": "success",
@@ -300,7 +315,12 @@ async def upload_notebooklm_credentials(
             "authenticated": True,
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
+        print(f"[UPLOAD] Error uploading credentials: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to upload credentials: {str(e)}"
