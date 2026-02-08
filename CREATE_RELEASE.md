@@ -21,30 +21,45 @@ The desktop app has been built successfully! Follow these steps to create a GitH
 
 Download and run the desktop app to connect your NotebookLM account.
 
+### ⚠️ Security Notice
+
+This app is **not code-signed** (requires $99/year Apple Developer account). macOS will show a warning that it "cannot verify the developer" or "cannot check for malware." This is normal for open-source apps. The source code is fully visible in this repository.
+
 ### Installation
 
 **Option 1: DMG (Recommended)**
-1. Download the DMG file below
-2. Open the DMG
+1. Download `DailyBrief-Setup-Mac.dmg` below
+2. Open the DMG file
 3. Drag "DailyBrief Setup" to your Applications folder
-4. Launch the app from Applications
-5. If macOS says the app can't be opened, go to System Settings > Privacy & Security and click "Open Anyway"
+4. **First Launch**: Right-click (or Control+click) the app in Applications and select "Open"
+5. Click "Open" when macOS asks "Are you sure you want to open it?"
+6. For subsequent launches, you can open it normally
 
 **Option 2: ZIP**
-1. Download the ZIP file below
+1. Download `DailyBrief-Setup-Mac.zip` below
 2. Extract the ZIP file
 3. Drag "DailyBrief Setup.app" to your Applications folder
-4. Launch the app and follow the setup instructions
-5. If macOS says the app can't be opened, go to System Settings > Privacy & Security and click "Open Anyway"
+4. **First Launch**: Right-click (or Control+click) the app and select "Open"
+5. Click "Open" when macOS asks "Are you sure you want to open it?"
+
+**Alternative Method:**
+If the above doesn't work, try this:
+1. Try to open the app normally (it will be blocked)
+2. Go to **System Settings** > **Privacy & Security**
+3. Scroll down to find a message about "DailyBrief Setup"
+4. Click **"Open Anyway"**
+5. Click **"Open"** in the confirmation dialog
 
 ### Requirements
 - macOS 10.13 or later
 - Internet connection
 
-### What's New
+### What's New (v1.0.0)
 - Initial release
 - NotebookLM authentication via browser
 - Secure credential upload to server
+- No unnecessary permission requests (Bluetooth, Camera, etc.)
+- App closes properly when quit
 ```
 
 ## Step 4: Upload the Files
