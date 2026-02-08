@@ -6,12 +6,6 @@ module.exports = {
   },
   makers: [
     {
-      name: '@electron-forge/maker-dmg',
-      config: {
-        name: 'DailyBrief Setup',
-      },
-    },
-    {
       name: '@electron-forge/maker-zip',
       platforms: ['darwin'],
     },
