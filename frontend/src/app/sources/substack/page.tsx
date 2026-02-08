@@ -153,7 +153,7 @@ function SubstackPageContent() {
               Connect to view and prioritize your newsletter subscriptions
             </p>
             <a
-              href="http://localhost:8000/auth/substack"
+              href={`${API_URL}/auth/substack`}
               className="inline-block px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-medium"
             >
               Connect Substack

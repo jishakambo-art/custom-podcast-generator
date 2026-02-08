@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { apiRequest } from "@/lib/api";
 
 interface NotebookLMStatus {
   authenticated: boolean;
@@ -13,34 +14,15 @@ interface NotebookLMStatus {
 }
 
 async function getNotebookLMStatus(): Promise<NotebookLMStatus> {
-  const response = await fetch("http://localhost:8000/auth/notebooklm/status");
-  if (!response.ok) {
-    throw new Error("Failed to check NotebookLM status");
-  }
-  return response.json();
+  return apiRequest("/auth/notebooklm/status", { method: "GET" });
 }
 
 async function authenticateNotebookLM(): Promise<any> {
-  const response = await fetch(
-    "http://localhost:8000/auth/notebooklm/authenticate",
-    {
-      method: "POST",
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Failed to authenticate with NotebookLM");
-  }
-  return response.json();
+  return apiRequest("/auth/notebooklm/authenticate", { method: "POST" });
 }
 
 async function revokeNotebookLM(): Promise<any> {
-  const response = await fetch("http://localhost:8000/auth/notebooklm/revoke", {
-    method: "DELETE",
-  });
-  if (!response.ok) {
-    throw new Error("Failed to revoke NotebookLM authentication");
-  }
-  return response.json();
+  return apiRequest("/auth/notebooklm/revoke", { method: "DELETE" });
 }
 
 export default function NotebookLMPage() {

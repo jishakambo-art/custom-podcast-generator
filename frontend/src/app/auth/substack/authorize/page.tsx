@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 export default function SubstackAuthorizePage() {
   const router = useRouter();
   const [authorizing, setAuthorizing] = useState(false);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   const handleAuthorize = async () => {
     setAuthorizing(true);
     // Simulate OAuth authorization
     setTimeout(() => {
-      window.location.href = "http://localhost:8000/auth/substack/callback?authorized=true";
+      window.location.href = `${API_URL}/auth/substack/callback?authorized=true`;
     }, 1000);
   };
 
