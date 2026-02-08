@@ -112,6 +112,49 @@ export default function SchedulePage() {
       </nav>
 
       <div className="max-w-2xl mx-auto px-4 py-16">
+        {/* Current Schedule Display */}
+        {schedule && (
+          <div className="bg-white p-6 rounded-lg border shadow-sm mb-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-1">Current Schedule</h2>
+                <div className="text-sm text-gray-600">
+                  {schedule.daily_generation_enabled ? (
+                    <div className="space-y-1">
+                      <div className="flex items-center">
+                        <svg className="w-4 h-4 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        <span className="font-medium text-green-700">Daily generation is enabled</span>
+                      </div>
+                      <div className="ml-6 text-gray-700">
+                        <strong>Time:</strong> {timeOptions.find((t) => t.value === schedule.generation_time)?.label || schedule.generation_time}
+                      </div>
+                      <div className="ml-6 text-gray-700">
+                        <strong>Timezone:</strong> {TIMEZONES.find((tz) => tz.value === schedule.timezone)?.label || schedule.timezone}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center text-gray-500">
+                      <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      Daily generation is currently disabled
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                schedule.daily_generation_enabled
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-gray-100 text-gray-600'
+              }`}>
+                {schedule.daily_generation_enabled ? 'Active' : 'Inactive'}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white p-8 rounded-lg border">
           <h1 className="text-2xl font-bold mb-2 text-gray-900">Daily Generation Schedule</h1>
           <p className="text-gray-600 mb-8">
