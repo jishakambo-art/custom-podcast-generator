@@ -3,10 +3,17 @@ import { supabase } from "./supabase";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 async function getAuthHeaders() {
-  // Demo mode - no authentication required
-  return {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
+
+  if (session?.access_token) {
+    headers["Authorization"] = `Bearer ${session.access_token}`;
+  }
+
+  return headers;
 }
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {

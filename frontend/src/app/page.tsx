@@ -1,14 +1,40 @@
 "use client";
 
 import Link from "next/link";
+import { useAuth } from "@/lib/auth-context";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
+  const { user, loading, signOut } = useAuth();
+  const router = useRouter();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!user && !loading) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <nav className="bg-white border-b">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-gray-900">DailyBrief</h1>
-          <span className="text-sm text-gray-700 font-medium">Demo Mode</span>
+          <button
+            onClick={signOut}
+            className="text-sm text-gray-700 hover:text-gray-900 font-medium"
+          >
+            Sign Out
+          </button>
         </div>
       </nav>
 
@@ -66,20 +92,12 @@ export default function Home() {
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex justify-between items-center mb-6">
             <h2 className="font-semibold text-lg text-gray-900">Recent Generations</h2>
-            <div className="flex gap-3">
-              <button
-                onClick={() => {/* Dummy button - does nothing */}}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
-              >
-                Generate Daily
-              </button>
-              <Link
-                href="/generate"
-                className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm"
-              >
-                Generate Now
-              </Link>
-            </div>
+            <Link
+              href="/generate"
+              className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm"
+            >
+              Generate Now
+            </Link>
           </div>
           <Link
             href="/generations"

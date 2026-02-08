@@ -61,6 +61,12 @@ async def login(user: UserLogin, settings: Settings = Depends(get_settings)):
         )
 
 
+@router.get("/me")
+async def get_current_user_info(user_id: str = Depends(get_current_user)):
+    """Get current authenticated user information."""
+    return {"user_id": user_id, "authenticated": True}
+
+
 @router.get("/substack")
 async def substack_oauth_start(settings: Settings = Depends(get_settings)):
     """Initiate Substack OAuth flow (Demo version)."""

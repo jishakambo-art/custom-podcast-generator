@@ -18,8 +18,29 @@ def get_supabase_anon_client(settings: Settings) -> Client:
 
 
 async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
     settings: Settings = Depends(get_settings),
 ) -> str:
-    """Return demo user ID (authentication disabled for demo)."""
-    # For demo mode, return a fixed demo user ID
-    return "demo-user-id-12345"
+    """Validate JWT token and return authenticated user ID."""
+    try:
+        token = credentials.credentials
+
+        # Verify JWT token with Supabase
+        supabase = get_supabase_anon_client(settings)
+        user = supabase.auth.get_user(token)
+
+        if not user or not user.user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        return user.user.id
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Could not validate credentials: {str(e)}",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
