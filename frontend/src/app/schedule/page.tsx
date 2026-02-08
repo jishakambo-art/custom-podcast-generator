@@ -58,8 +58,8 @@ export default function SchedulePage() {
   const handleSave = () => {
     updateMutation.mutate({
       daily_generation_enabled: enabled,
-      generation_time: time,
-      timezone: timezone,
+      generation_time: "07:00", // Fixed at 7am
+      timezone: "America/Los_Angeles", // Fixed at Pacific Time
     });
   };
 
@@ -172,12 +172,12 @@ export default function SchedulePage() {
           </p>
 
           {/* Enable/Disable Toggle */}
-          <div className="mb-8 pb-8 border-b">
+          <div className="mb-8">
             <label className="flex items-center justify-between cursor-pointer">
               <div>
-                <div className="font-medium text-gray-900 mb-1">Enable Daily Generation</div>
+                <div className="font-medium text-gray-900 mb-1">Schedule Daily at 7:00 AM PST</div>
                 <div className="text-sm text-gray-600">
-                  Automatically generate a podcast every day at your chosen time
+                  Automatically generate a podcast every day at 7:00 AM Pacific Time
                 </div>
               </div>
               <div className="relative">
@@ -192,45 +192,6 @@ export default function SchedulePage() {
                 </div>
               </div>
             </label>
-          </div>
-
-          {/* Time Selection */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Generation Time
-            </label>
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              disabled={!enabled}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 disabled:bg-gray-100 disabled:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <p className="mt-2 text-sm text-gray-600">
-              Enter the time when your daily podcast should be generated (any minute is allowed)
-            </p>
-          </div>
-
-          {/* Timezone Selection */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Timezone
-            </label>
-            <select
-              value={timezone}
-              onChange={(e) => setTimezone(e.target.value)}
-              disabled={!enabled}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-900 disabled:bg-gray-100 disabled:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              {TIMEZONES.map((tz) => (
-                <option key={tz.value} value={tz.value}>
-                  {tz.label}
-                </option>
-              ))}
-            </select>
-            <p className="mt-2 text-sm text-gray-600">
-              The timezone for your generation time
-            </p>
           </div>
 
           {/* Info Box */}
