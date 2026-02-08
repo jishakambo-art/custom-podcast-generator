@@ -4,7 +4,7 @@ from datetime import datetime, time as Time
 from typing import List, Dict
 import pytz
 
-from app.services import demo_store
+from app.services import db
 from app.services.podcast_generator import generate_podcast_for_user
 from app.config import get_settings
 
@@ -67,7 +67,7 @@ async def check_and_generate_for_all_users():
     users_to_generate = []
 
     # Get all users with daily generation enabled
-    users_with_schedule = demo_store.get_users_with_daily_generation_enabled()
+    users_with_schedule = db.get_users_with_daily_generation_enabled()
 
     print(f"[SCHEDULER] Found {len(users_with_schedule)} users with daily generation enabled")
 
@@ -85,7 +85,7 @@ async def check_and_generate_for_all_users():
         tasks = []
         for user_id in users_to_generate:
             # Create generation log
-            log = demo_store.create_generation_log(user_id)
+            log = db.create_generation_log(user_id)
 
             # Add to task list
             task = generate_podcast_for_user(

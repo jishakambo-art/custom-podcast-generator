@@ -275,36 +275,19 @@ async def upload_notebooklm_credentials(
 
         print(f"[UPLOAD] Credentials payload has keys: {list(credentials.keys())}")
 
-        # Save credentials to user's file
-        creds_path = notebooklm_auth._get_user_creds_path(user_id)
-        creds_path.parent.mkdir(parents=True, exist_ok=True)
+        # Save credentials to database
+        from app.services import db
+        db.save_notebooklm_credentials(user_id, credentials)
 
-        print(f"[UPLOAD] Saving credentials to: {creds_path}")
+        print(f"[UPLOAD] Credentials saved to database for user: {user_id}")
 
-        with open(creds_path, 'w') as f:
-            json.dump(credentials, f, indent=2)
-
-        # Set restrictive permissions
-        creds_path.chmod(0o600)
-
-        print(f"[UPLOAD] Credentials file saved with size: {creds_path.stat().st_size} bytes")
-
-        # Save metadata
+        # Update cache
         from datetime import datetime
         metadata = {
             "user_id": user_id,
             "authenticated": True,
             "authenticated_at": datetime.utcnow().isoformat(),
-            "credentials_path": str(creds_path),
         }
-
-        metadata_path = notebooklm_auth.credentials_dir / f"{user_id}_meta.json"
-        with open(metadata_path, 'w') as f:
-            json.dump(metadata, f, indent=2)
-
-        print(f"[UPLOAD] Metadata saved to: {metadata_path}")
-
-        # Update cache
         notebooklm_auth._auth_cache[user_id] = metadata
 
         print(f"[UPLOAD] Successfully uploaded credentials for user: {user_id}")

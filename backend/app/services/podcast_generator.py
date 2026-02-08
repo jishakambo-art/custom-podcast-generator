@@ -38,37 +38,36 @@ async def generate_podcast_for_user(
     4. Generates audio
     5. Updates status throughout
     """
-    # Import demo store for demo mode
-    from app.services import demo_store
+    # Import db service
+    from app.services import db
 
     def update_status(status: str, error: Optional[str] = None, **kwargs):
-        demo_store.update_generation_log(
-            generation_id=generation_id,
-            status=status,
-            error=error,
-            **kwargs
-        )
+        updates = {"status": status}
+        if error:
+            updates["error_message"] = error
+        updates.update(kwargs)
+        db.update_generation_log(generation_id=generation_id, updates=updates)
 
     try:
         # Update status to fetching
         print(f"[GENERATION {generation_id}] Starting podcast generation for user {user_id}")
         update_status("fetching")
 
-        # Fetch user's sources from demo store
+        # Fetch user's sources from database
         substack_sources = [
-            s for s in demo_store.get_substack_sources(user_id)
+            s for s in db.get_substack_sources(user_id)
             if s.get("enabled") and s.get("priority") is not None
         ]
         # Sort by priority and limit to 5
         substack_sources = sorted(substack_sources, key=lambda x: x.get("priority", 999))[:5]
 
         rss_sources = [
-            s for s in demo_store.get_rss_sources(user_id)
+            s for s in db.get_rss_sources(user_id)
             if s.get("enabled")
         ]
 
         news_topics = [
-            t for t in demo_store.get_news_topics(user_id)
+            t for t in db.get_news_topics(user_id)
             if t.get("enabled")
         ]
 

@@ -11,7 +11,7 @@ from app.schemas.sources import (
     NewsTopicCreate,
 )
 from app.services.supabase import get_current_user
-from app.services import demo_store
+from app.services import db
 
 router = APIRouter()
 
@@ -24,7 +24,7 @@ async def get_substack_subscriptions(
     settings: Settings = Depends(get_settings),
 ):
     """Get all Substack subscriptions for the current user."""
-    return demo_store.get_substack_sources(user_id)
+    return db.get_substack_sources(user_id)
 
 
 @router.put("/substack/priorities")
@@ -42,7 +42,7 @@ async def set_substack_priorities(
                 detail="Priority must be between 1 and 5",
             )
 
-    demo_store.update_substack_priorities(user_id, priorities.priorities)
+    db.update_substack_priorities(user_id, priorities.priorities)
     return {"message": "Priorities updated"}
 
 
@@ -54,7 +54,7 @@ async def get_rss_sources(
     settings: Settings = Depends(get_settings),
 ):
     """Get all RSS sources for the current user."""
-    return demo_store.get_rss_sources(user_id)
+    return db.get_rss_sources(user_id)
 
 
 @router.post("/rss", response_model=RSSSource)
@@ -64,7 +64,7 @@ async def create_rss_source(
     settings: Settings = Depends(get_settings),
 ):
     """Add a new RSS feed source."""
-    return demo_store.add_rss_source(user_id, source.url, source.name)
+    return db.add_rss_source(user_id, source.url, source.name)
 
 
 @router.delete("/rss/{source_id}")
@@ -74,7 +74,7 @@ async def delete_rss_source(
     settings: Settings = Depends(get_settings),
 ):
     """Delete an RSS source."""
-    demo_store.delete_rss_source(user_id, source_id)
+    db.delete_rss_source(user_id, source_id)
     return {"message": "Source deleted"}
 
 
@@ -86,7 +86,7 @@ async def get_news_topics(
     settings: Settings = Depends(get_settings),
 ):
     """Get all news topics for the current user."""
-    return demo_store.get_news_topics(user_id)
+    return db.get_news_topics(user_id)
 
 
 @router.post("/topics", response_model=NewsTopic)
@@ -96,7 +96,7 @@ async def create_news_topic(
     settings: Settings = Depends(get_settings),
 ):
     """Add a new news topic to track."""
-    return demo_store.add_news_topic(user_id, topic.topic)
+    return db.add_news_topic(user_id, topic.topic)
 
 
 @router.delete("/topics/{topic_id}")
@@ -106,5 +106,5 @@ async def delete_news_topic(
     settings: Settings = Depends(get_settings),
 ):
     """Delete a news topic."""
-    demo_store.delete_news_topic(user_id, topic_id)
+    db.delete_news_topic(user_id, topic_id)
     return {"message": "Topic deleted"}

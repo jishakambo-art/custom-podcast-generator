@@ -5,7 +5,7 @@ from datetime import datetime
 from app.config import get_settings, Settings
 from app.schemas.generation import GenerationLog, GenerationStatus
 from app.services.supabase import get_current_user
-from app.services import demo_store
+from app.services import db
 from app.services.podcast_generator import generate_podcast_for_user
 from app.services.scheduler import check_and_generate_for_all_users
 
@@ -20,7 +20,7 @@ async def trigger_generation(
 ):
     """Manually trigger podcast generation for the current user."""
     # Create generation log entry
-    log = demo_store.create_generation_log(user_id)
+    log = db.create_generation_log(user_id)
 
     # Run generation in background
     background_tasks.add_task(
@@ -40,7 +40,7 @@ async def get_generations(
     limit: int = 10,
 ):
     """Get generation history for the current user."""
-    return demo_store.get_generation_logs(user_id, limit)
+    return db.get_generation_logs(user_id, limit)
 
 
 @router.get("/generations/{generation_id}", response_model=GenerationLog)
@@ -50,7 +50,7 @@ async def get_generation(
     settings: Settings = Depends(get_settings),
 ):
     """Get status of a specific generation."""
-    log = demo_store.get_generation_log(user_id, generation_id)
+    log = db.get_generation_log(user_id, generation_id)
 
     if not log:
         raise HTTPException(status_code=404, detail="Generation not found")

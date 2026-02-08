@@ -123,6 +123,14 @@ class NotebookLMAuth:
 
                 await context.close()
 
+            # Load credentials from storage file to save to database
+            with open(storage_path, "r") as f:
+                credentials = json.load(f)
+
+            # Save credentials to database
+            from app.services import db
+            db.save_notebooklm_credentials(user_id, credentials)
+
             # Save authentication metadata
             auth_metadata = {
                 "user_id": user_id,
@@ -134,10 +142,11 @@ class NotebookLMAuth:
             # Store in cache
             self._auth_cache[user_id] = auth_metadata
 
-            # Save metadata alongside credentials
-            metadata_path = self.credentials_dir / f"{user_id}_meta.json"
-            with open(metadata_path, "w") as f:
-                json.dump(auth_metadata, f)
+            # Clean up local storage file after saving to database
+            try:
+                storage_path.unlink()
+            except Exception:
+                pass
 
             return {
                 "status": "success",
@@ -166,16 +175,18 @@ class NotebookLMAuth:
         if user_id in self._auth_cache:
             return self._auth_cache[user_id]
 
-        # Load from disk
-        metadata_path = self.credentials_dir / f"{user_id}_meta.json"
-        if metadata_path.exists():
-            try:
-                with open(metadata_path, "r") as f:
-                    metadata = json.load(f)
-                    self._auth_cache[user_id] = metadata
-                    return metadata
-            except Exception:
-                return None
+        # Load from database
+        from app.services import db
+        credentials = db.get_notebooklm_credentials(user_id)
+
+        if credentials:
+            metadata = {
+                "user_id": user_id,
+                "authenticated": True,
+                "credentials": credentials,
+            }
+            self._auth_cache[user_id] = metadata
+            return metadata
 
         return None
 
@@ -189,14 +200,9 @@ class NotebookLMAuth:
         Returns:
             True if authenticated, False otherwise
         """
-        creds_path = self._get_user_creds_path(user_id)
-        metadata = self.get_user_credentials(user_id)
-
-        return (
-            creds_path.exists()
-            and metadata is not None
-            and metadata.get("authenticated", False)
-        )
+        from app.services import db
+        credentials = db.get_notebooklm_credentials(user_id)
+        return credentials is not None
 
     async def get_client(self, user_id: str) -> Optional[any]:
         """
@@ -213,9 +219,21 @@ class NotebookLMAuth:
 
         try:
             from notebooklm import NotebookLMClient
+            from app.services import db
 
-            # Get user's storage path
+            # Get credentials from database
+            credentials = db.get_notebooklm_credentials(user_id)
+            if not credentials:
+                return None
+
+            # Create temporary storage file for notebooklm-py
             user_storage_path = self._get_user_creds_path(user_id)
+            user_storage_path.parent.mkdir(parents=True, exist_ok=True)
+
+            with open(user_storage_path, "w") as f:
+                json.dump(credentials, f, indent=2)
+
+            user_storage_path.chmod(0o600)
 
             # Load client from stored credentials
             client = await NotebookLMClient.from_storage(path=str(user_storage_path))
@@ -235,15 +253,15 @@ class NotebookLMAuth:
             Dict with status and message
         """
         try:
-            # Remove credentials file
+            from app.services import db
+
+            # Delete credentials from database
+            db.delete_notebooklm_credentials(user_id)
+
+            # Remove temporary credentials file if it exists
             creds_path = self._get_user_creds_path(user_id)
             if creds_path.exists():
                 creds_path.unlink()
-
-            # Remove metadata
-            metadata_path = self.credentials_dir / f"{user_id}_meta.json"
-            if metadata_path.exists():
-                metadata_path.unlink()
 
             # Clear cache
             if user_id in self._auth_cache:

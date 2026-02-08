@@ -9,7 +9,7 @@ from app.schemas.preferences import (
     SchedulePreferencesUpdate,
 )
 from app.services.supabase import get_current_user
-from app.services import demo_store
+from app.services import db
 
 router = APIRouter()
 
@@ -20,7 +20,7 @@ async def get_preferences(
     settings: Settings = Depends(get_settings),
 ):
     """Get user preferences including schedule settings."""
-    prefs = demo_store.get_user_preferences(user_id)
+    prefs = db.get_user_preferences(user_id)
 
     if not prefs:
         # Return defaults if not found
@@ -45,7 +45,7 @@ async def update_preferences(
     settings: Settings = Depends(get_settings),
 ):
     """Update user preferences."""
-    updated_prefs = demo_store.update_user_preferences(user_id, preferences.dict(exclude_unset=True))
+    updated_prefs = db.update_user_preferences(user_id, preferences.dict(exclude_unset=True))
 
     if not updated_prefs:
         raise HTTPException(status_code=404, detail="Preferences not found")
@@ -59,7 +59,7 @@ async def get_schedule(
     settings: Settings = Depends(get_settings),
 ):
     """Get daily generation schedule preferences."""
-    prefs = demo_store.get_user_preferences(user_id)
+    prefs = db.get_user_preferences(user_id)
 
     print(f"[SCHEDULE GET] User {user_id} - Retrieved preferences: daily_enabled={prefs.get('daily_generation_enabled')}, time={prefs.get('generation_time')}")
 
@@ -118,7 +118,7 @@ async def update_schedule(
         update_data["timezone"] = schedule.timezone
 
     print(f"[SCHEDULE PUT] Updating with data: {update_data}")
-    updated_prefs = demo_store.update_user_preferences(user_id, update_data)
+    updated_prefs = db.update_user_preferences(user_id, update_data)
     print(f"[SCHEDULE PUT] After update - daily_enabled={updated_prefs.get('daily_generation_enabled')}")
 
     if not updated_prefs:
