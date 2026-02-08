@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["xorg.xvfb"]
+nixPkgs = ["xorg.xvfb", "gcc", "pkg-config", "openssl"]
 
 [start]
 cmd = "./setup_and_start.sh"
