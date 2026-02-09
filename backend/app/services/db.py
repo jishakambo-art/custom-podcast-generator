@@ -123,8 +123,11 @@ def create_generation_log(user_id: str) -> Dict:
         "scheduled_at": datetime.utcnow().isoformat() + 'Z',
         "status": "scheduled",
     }
+    print(f"[DB] Creating generation log for user {user_id}")
     response = client.table("generation_logs").insert(data).execute()
-    return response.data[0]
+    log = response.data[0]
+    print(f"[DB] Created generation log with ID: {log['id']}")
+    return log
 
 
 def get_generation_logs(user_id: str, limit: int = 10) -> List[Dict]:
@@ -157,7 +160,9 @@ def get_generation_log(user_id: str, generation_id: str) -> Optional[Dict]:
 def update_generation_log(generation_id: str, updates: Dict) -> Dict:
     """Update a generation log."""
     client = get_db_client()
-    updates["updated_at"] = datetime.utcnow().isoformat()
+
+    # Note: generation_logs table doesn't have updated_at column
+    print(f"[DB] Updating generation log {generation_id} with: {updates}")
 
     response = (
         client.table("generation_logs")
@@ -165,6 +170,12 @@ def update_generation_log(generation_id: str, updates: Dict) -> Dict:
         .eq("id", generation_id)
         .execute()
     )
+
+    print(f"[DB] Update response: {response.data}")
+
+    if not response.data:
+        raise Exception(f"Failed to update generation log {generation_id} - no data returned. Generation may not exist.")
+
     return response.data[0]
 
 
