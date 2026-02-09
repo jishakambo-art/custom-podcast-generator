@@ -19,10 +19,14 @@ async def trigger_generation(
     settings: Settings = Depends(get_settings),
 ):
     """Manually trigger podcast generation for the current user."""
+    print(f"[GENERATE] Starting generation for user: {user_id}")
+
     # Create generation log entry
     log = db.create_generation_log(user_id)
+    print(f"[GENERATE] Created log: {log['id']} with status: {log['status']}")
 
     # Run generation in background
+    print(f"[GENERATE] Adding background task for generation: {log['id']}")
     background_tasks.add_task(
         generate_podcast_for_user,
         user_id=user_id,
@@ -30,6 +34,7 @@ async def trigger_generation(
         settings=settings,
     )
 
+    print(f"[GENERATE] Background task added, returning log")
     return log
 
 
@@ -56,6 +61,28 @@ async def get_generation(
         raise HTTPException(status_code=404, detail="Generation not found")
 
     return log
+
+
+@router.get("/debug/sources")
+async def debug_sources(
+    user_id: str = Depends(get_current_user),
+):
+    """Debug endpoint to check what sources user has configured."""
+    substack = db.get_substack_sources(user_id)
+    rss = db.get_rss_sources(user_id)
+    topics = db.get_news_topics(user_id)
+
+    return {
+        "user_id": user_id,
+        "substack_sources": substack,
+        "rss_sources": rss,
+        "news_topics": topics,
+        "total": {
+            "substack": len(substack),
+            "rss": len(rss),
+            "topics": len(topics),
+        }
+    }
 
 
 @router.post("/cron/daily-generation")

@@ -38,20 +38,36 @@ async def generate_podcast_for_user(
     4. Generates audio
     5. Updates status throughout
     """
+    print(f"[GENERATION {generation_id}] ===== STARTING BACKGROUND TASK =====")
+    print(f"[GENERATION {generation_id}] User ID: {user_id}")
+
     # Import db service
     from app.services import db
 
     def update_status(status: str, error: Optional[str] = None, **kwargs):
-        updates = {"status": status}
-        if error:
-            updates["error_message"] = error
-        updates.update(kwargs)
-        db.update_generation_log(generation_id=generation_id, updates=updates)
+        try:
+            updates = {"status": status}
+            if error:
+                updates["error_message"] = error
+            updates.update(kwargs)
+            print(f"[GENERATION {generation_id}] Updating status to: {status}")
+            if error:
+                print(f"[GENERATION {generation_id}] Error message: {error}")
+            result = db.update_generation_log(generation_id=generation_id, updates=updates)
+            print(f"[GENERATION {generation_id}] Status updated successfully")
+            return result
+        except Exception as e:
+            print(f"[GENERATION {generation_id}] FAILED TO UPDATE STATUS: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise
 
+    # Wrap everything in try-catch to catch any early failures
     try:
         # Update status to fetching
-        print(f"[GENERATION {generation_id}] Starting podcast generation for user {user_id}")
+        print(f"[GENERATION {generation_id}] About to update status to 'fetching'")
         update_status("fetching")
+        print(f"[GENERATION {generation_id}] Status updated to 'fetching'successfully")
 
         # Fetch user's sources from database
         substack_sources = [
@@ -159,7 +175,15 @@ async def generate_podcast_for_user(
         )
 
     except Exception as e:
-        update_status("failed", error=str(e))
+        print(f"[GENERATION {generation_id}] ===== GENERATION FAILED =====")
+        print(f"[GENERATION {generation_id}] Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        try:
+            update_status("failed", error=str(e))
+        except Exception as update_error:
+            print(f"[GENERATION {generation_id}] CRITICAL: Failed to update status to 'failed': {str(update_error)}")
+            traceback.print_exc()
 
 
 async def run_scheduled_generation(settings: Settings) -> None:

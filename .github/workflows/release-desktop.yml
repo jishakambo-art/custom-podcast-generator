@@ -1,0 +1,83 @@
+name: Build and Release Desktop App
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Trigger on version tags like v1.0.0
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: desktop
+        run: npm install
+
+      - name: Install Playwright browsers
+        working-directory: desktop
+        run: npx playwright install chromium
+
+      - name: Package app
+        working-directory: desktop
+        run: npm run make
+
+      - name: List output files
+        working-directory: desktop
+        run: |
+          echo "Contents of out directory:"
+          find out -type f
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: DailyBrief Desktop v${{ github.ref_name }}
+          body: |
+            ## DailyBrief Desktop App
+
+            Download and run the desktop app to connect your NotebookLM account.
+
+            ### Installation
+            1. Download the DMG file below
+            2. Open the DMG
+            3. Drag DailyBrief Setup to Applications
+            4. Launch the app and follow the setup instructions
+
+            ### Requirements
+            - macOS 10.13 or later
+            - Internet connection
+          draft: false
+          prerelease: false
+
+      - name: Upload DMG to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: desktop/out/make/DailyBrief Setup.dmg
+          asset_name: DailyBrief-Setup-Mac.dmg
+          asset_content_type: application/octet-stream
+
+      - name: Upload ZIP to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: desktop/out/make/zip/darwin/x64/dailybrief-setup-darwin-x64-1.0.0.zip
+          asset_name: DailyBrief-Setup-Mac.zip
+          asset_content_type: application/zip

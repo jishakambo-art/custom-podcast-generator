@@ -2,8 +2,9 @@ name: Daily Podcast Generation Cron
 
 on:
   schedule:
-    # Runs every 5 minutes
-    - cron: '*/5 * * * *'
+    # Runs daily at 7:00 AM PST (3:00 PM UTC / 15:00 UTC)
+    # Note: During PDT (March-November), this will run at 8:00 AM PDT
+    - cron: '0 15 * * *'
   workflow_dispatch: # Allows manual triggering for testing
 
 jobs:
