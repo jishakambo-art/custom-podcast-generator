@@ -38,18 +38,6 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
 // Export as apiRequest for general use
 export const apiRequest = fetchWithAuth;
 
-// Substack
-export async function getSubstackSubscriptions() {
-  return fetchWithAuth("/substack/subscriptions");
-}
-
-export async function setSubstackPriorities(priorities: Record<string, number>) {
-  return fetchWithAuth("/substack/priorities", {
-    method: "PUT",
-    body: JSON.stringify({ priorities }),
-  });
-}
-
 // RSS
 export async function getRssSources() {
   return fetchWithAuth("/rss");
