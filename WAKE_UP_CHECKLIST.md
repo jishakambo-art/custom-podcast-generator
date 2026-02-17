@@ -110,7 +110,7 @@ npm run make
 Creates: `out/make/DailyBrief Setup.dmg`
 
 ### 2. Upload to GitHub Releases
-- Go to: https://github.com/jishakambo-art/hackathon/releases
+- Go to: https://github.com/jishakambo-art/custom-podcast-generator/releases
 - Click "Create a new release"
 - Tag: v1.0.0
 - Upload the .dmg file
@@ -119,7 +119,7 @@ Creates: `out/make/DailyBrief Setup.dmg`
 ### 3. Update Web App Download Link
 The NotebookLM page currently links to:
 ```
-https://github.com/jishakambo-art/hackathon/releases/latest
+https://github.com/jishakambo-art/custom-podcast-generator/releases/latest
 ```
 
 This will work once you create a release!

@@ -104,7 +104,7 @@ See `desktop/TESTING.md` for detailed testing instructions.
 3. `b049a43` - Update web app NotebookLM page with desktop app download instructions
 4. `81dfa2a` - Add desktop setup token page and improve UX
 
-All pushed to GitHub: https://github.com/jishakambo-art/hackathon
+All pushed to GitHub: https://github.com/jishakambo-art/custom-podcast-generator
 
 ## Building the Distributable
 

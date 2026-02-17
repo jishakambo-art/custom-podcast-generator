@@ -146,7 +146,7 @@ export default function NotebookLMPage() {
                   </div>
 
                   <a
-                    href="https://github.com/jishakambo-art/hackathon/releases/latest"
+                    href="https://github.com/jishakambo-art/custom-podcast-generator/releases/latest"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium w-full"

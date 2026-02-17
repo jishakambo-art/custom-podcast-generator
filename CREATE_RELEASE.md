@@ -4,7 +4,7 @@ The desktop app has been built successfully! Follow these steps to create a GitH
 
 ## Step 1: Go to GitHub Releases
 
-1. Go to: https://github.com/jishakambo-art/hackathon/releases
+1. Go to: https://github.com/jishakambo-art/custom-podcast-generator/releases
 2. Click "Create a new release"
 
 ## Step 2: Create a Tag
@@ -84,6 +84,6 @@ If the above doesn't work, try this:
 ## Done!
 
 Users can now download the app from:
-https://github.com/jishakambo-art/hackathon/releases/latest
+https://github.com/jishakambo-art/custom-podcast-generator/releases/latest
 
 The download button in your web app will automatically point to the latest release.

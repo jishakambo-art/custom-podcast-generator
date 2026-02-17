@@ -19,7 +19,7 @@ To create a new release of the desktop app:
    - Create a GitHub release
    - Upload the DMG and ZIP files
 
-4. Users can then download from: https://github.com/jishakambo-art/hackathon/releases/latest
+4. Users can then download from: https://github.com/jishakambo-art/custom-podcast-generator/releases/latest
 
 ## Manual Build (for testing)
 
