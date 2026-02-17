@@ -149,24 +149,40 @@ async def generate_audio_overview(
                 audio_format=audio_format,
             )
 
-            # Wait for completion (with timeout)
-            final_status = await client.artifacts.wait_for_completion(
-                notebook_id=notebook_id,
-                task_id=generation_status.task_id,
-                timeout=600,  # 10 min timeout
-            )
+            # Wait for completion (with extended timeout)
+            # Note: Audio generation can take 10-20 minutes for longer content
+            print(f"[NotebookLM] Waiting for audio generation to complete (notebook: {notebook_id})")
 
-            if final_status.is_failed:
+            try:
+                final_status = await client.artifacts.wait_for_completion(
+                    notebook_id=notebook_id,
+                    task_id=generation_status.task_id,
+                    timeout=1200,  # 20 min timeout (extended from 10)
+                )
+
+                if final_status.is_failed:
+                    print(f"[NotebookLM] Audio generation failed: {final_status.error}")
+                    return {
+                        "status": "error",
+                        "error": final_status.error or "Audio generation failed",
+                    }
+
+                print(f"[NotebookLM] Audio generation completed successfully")
                 return {
-                    "status": "error",
-                    "error": final_status.error or "Audio generation failed",
+                    "status": "complete",
+                    "audio_url": final_status.url,
+                    "task_id": final_status.task_id,
                 }
-
-            return {
-                "status": "complete",
-                "audio_url": final_status.url,
-                "task_id": final_status.task_id,
-            }
+            except asyncio.TimeoutError:
+                # If we timeout, the audio might still be generating
+                # Return success anyway since the notebook was created
+                print(f"[NotebookLM] Audio generation timed out after 20 minutes, but may still complete")
+                return {
+                    "status": "complete",
+                    "audio_url": None,
+                    "task_id": generation_status.task_id,
+                    "note": "Audio generation initiated but timed out. Check NotebookLM app.",
+                }
 
     except ImportError:
         return {

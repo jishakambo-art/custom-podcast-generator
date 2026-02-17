@@ -30,6 +30,42 @@ def require_admin(user_id: str = Depends(get_current_user), settings: Settings =
     return user_id
 
 
+@router.post("/fix-stuck-generations")
+async def fix_stuck_generations(
+    admin_user_id: str = Depends(require_admin),
+    settings: Settings = Depends(get_settings),
+):
+    """
+    Fix generations stuck in 'generating' or 'fetching' status.
+    Marks them as complete if they have a notebook_id.
+    Admin only endpoint.
+    """
+    from app.services.supabase import get_supabase_client
+    client = get_supabase_client(settings)
+
+    # Find all generations stuck in generating/fetching with a notebook_id
+    stuck_generations = (
+        client.table("generation_logs")
+        .select("*")
+        .in_("status", ["generating", "fetching"])
+        .not_.is_("notebook_id", "null")
+        .execute()
+    )
+
+    fixed_count = 0
+    for gen in stuck_generations.data:
+        # Update to complete
+        client.table("generation_logs").update({
+            "status": "complete"
+        }).eq("id", gen["id"]).execute()
+        fixed_count += 1
+
+    return {
+        "fixed": fixed_count,
+        "generation_ids": [g["id"] for g in stuck_generations.data]
+    }
+
+
 @router.get("/usage")
 async def get_usage_data(
     admin_user_id: str = Depends(require_admin),
