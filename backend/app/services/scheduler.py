@@ -21,7 +21,7 @@ def should_generate_now(user_prefs: Dict) -> bool:
 
     # Get user's timezone and scheduled time
     user_tz = pytz.timezone(user_prefs.get("timezone", "America/Los_Angeles"))
-    scheduled_time = user_prefs.get("generation_time", Time(7, 0))
+    scheduled_time = user_prefs.get("generation_time", Time(6, 0))
 
     # Get current time in user's timezone
     now_utc = datetime.utcnow().replace(tzinfo=pytz.UTC)
@@ -60,7 +60,7 @@ async def check_and_generate_for_all_users():
     """
     Generate podcasts for all users with daily generation enabled.
 
-    This function is called by the cron job at 7am PT daily.
+    This function is called by the cron job at 6am PT daily.
     No time checks needed - the cron job handles the timing.
     """
     settings = get_settings()
@@ -125,7 +125,7 @@ def format_next_generation_time(user_prefs: Dict) -> str:
         return "Daily generation is disabled"
 
     user_tz = pytz.timezone(user_prefs.get("timezone", "America/Los_Angeles"))
-    scheduled_time = user_prefs.get("generation_time", Time(7, 0))
+    scheduled_time = user_prefs.get("generation_time", Time(6, 0))
 
     # Get current time in user's timezone
     now_utc = datetime.utcnow().replace(tzinfo=pytz.UTC)

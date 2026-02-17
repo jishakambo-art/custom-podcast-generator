@@ -32,7 +32,7 @@ async def get_preferences(
             language="en",
             timezone="America/Los_Angeles",
             daily_generation_enabled=False,
-            generation_time=Time(7, 0),
+            generation_time=Time(6, 0),
         )
 
     return prefs
@@ -72,7 +72,7 @@ async def get_schedule(
         )
 
     # Convert time object to HH:MM string
-    gen_time = prefs.get("generation_time", Time(7, 0))
+    gen_time = prefs.get("generation_time", Time(6, 0))
     if isinstance(gen_time, Time):
         time_str = gen_time.strftime("%H:%M")
     else:
@@ -125,7 +125,7 @@ async def update_schedule(
         raise HTTPException(status_code=404, detail="Preferences not found")
 
     # Return formatted response
-    gen_time = updated_prefs.get("generation_time", Time(7, 0))
+    gen_time = updated_prefs.get("generation_time", Time(6, 0))
     if isinstance(gen_time, Time):
         time_str = gen_time.strftime("%H:%M")
     else:

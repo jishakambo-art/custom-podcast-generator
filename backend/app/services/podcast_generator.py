@@ -204,7 +204,7 @@ async def run_scheduled_generation(settings: Settings) -> None:
     """
     Run generation for all users with enabled sources.
 
-    This is called by the cron job at 7am PT.
+    This is called by the cron job at 6am PT.
     """
     supabase = get_supabase_client(settings)
 

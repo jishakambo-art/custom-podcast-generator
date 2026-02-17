@@ -30,7 +30,7 @@ export default function SchedulePage() {
   const { user, loading } = useAuth();
   const queryClient = useQueryClient();
   const [enabled, setEnabled] = useState(false);
-  const [time, setTime] = useState("07:00");
+  const [time, setTime] = useState("06:00");
   const [timezone, setTimezone] = useState("America/Los_Angeles");
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -69,7 +69,7 @@ export default function SchedulePage() {
   const handleSave = () => {
     updateMutation.mutate({
       daily_generation_enabled: enabled,
-      generation_time: "07:00", // Fixed at 7am
+      generation_time: "06:00", // Fixed at 6am PT (when cron runs)
       timezone: "America/Los_Angeles", // Fixed at Pacific Time
     });
   };
@@ -186,9 +186,9 @@ export default function SchedulePage() {
           <div className="mb-8">
             <label className="flex items-center justify-between cursor-pointer">
               <div>
-                <div className="font-medium text-gray-900 mb-1">Schedule Daily at 7:00 AM PST</div>
+                <div className="font-medium text-gray-900 mb-1">Schedule Daily at 6:00 AM PT</div>
                 <div className="text-sm text-gray-600">
-                  Automatically generate a podcast every day at 7:00 AM Pacific Time
+                  Automatically generate a podcast every day at 6:00 AM Pacific Time
                 </div>
               </div>
               <div className="relative">

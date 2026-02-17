@@ -93,7 +93,7 @@ async def cron_daily_generation(
     """
     Cron endpoint for daily podcast generation.
 
-    This endpoint should be called once daily at 7am PT by cron-job.org.
+    This endpoint should be called once daily at 6am PT by cron-job.org.
     It generates podcasts for all users with daily generation enabled.
 
     Optional: Protect with a secret header for security.
