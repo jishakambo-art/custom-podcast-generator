@@ -45,11 +45,14 @@ export default function SchedulePage() {
   const { data: schedule, isLoading } = useQuery({
     queryKey: ["schedule"],
     queryFn: getSchedulePreferences,
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true, // Always refetch when component mounts
   });
 
   // Update local state when data loads
   useEffect(() => {
     if (schedule) {
+      console.log("[Schedule] Loaded from API:", schedule);
       setEnabled(schedule.daily_generation_enabled);
       setTime(schedule.generation_time);
       setTimezone(schedule.timezone);
@@ -59,14 +62,19 @@ export default function SchedulePage() {
   // Update mutation
   const updateMutation = useMutation({
     mutationFn: updateSchedulePreferences,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("[Schedule] Update successful:", data);
       queryClient.invalidateQueries({ queryKey: ["schedule"] });
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     },
+    onError: (error) => {
+      console.error("[Schedule] Update failed:", error);
+    },
   });
 
   const handleSave = () => {
+    console.log("[Schedule] Saving with enabled:", enabled);
     updateMutation.mutate({
       daily_generation_enabled: enabled,
       generation_time: "06:00", // Fixed at 6am PT (when cron runs)
