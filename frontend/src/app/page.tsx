@@ -79,12 +79,22 @@ export default function Home() {
       <nav className="bg-white/90 backdrop-blur-sm border-b border-white/20">
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-gray-900">DailyBrief 🎙️</h1>
-          <button
-            onClick={signOut}
-            className="text-sm text-gray-700 hover:text-gray-900 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 transition"
-          >
-            Sign Out
-          </button>
+          <div className="flex items-center gap-2">
+            {user.email === "iamjishak@gmail.com" && (
+              <Link
+                href="/admin/usage"
+                className="text-sm text-purple-600 hover:text-purple-700 font-medium px-4 py-2 rounded-lg hover:bg-purple-50 transition"
+              >
+                Admin Dashboard
+              </Link>
+            )}
+            <button
+              onClick={signOut}
+              className="text-sm text-gray-700 hover:text-gray-900 font-medium px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </nav>
 

@@ -98,3 +98,8 @@ export async function updateSchedulePreferences(data: {
     body: JSON.stringify(data),
   });
 }
+
+// Admin
+export async function getUsageData() {
+  return fetchWithAuth("/admin/usage");
+}
