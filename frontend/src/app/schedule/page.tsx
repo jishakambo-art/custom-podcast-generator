@@ -194,7 +194,7 @@ export default function SchedulePage() {
           </p>
 
           {/* Enable/Disable Toggle */}
-          <div className="mb-8">
+          <div className="mb-4">
             <label className="flex items-center justify-between cursor-pointer">
               <div>
                 <div className="font-medium text-gray-900 mb-1">Schedule Daily at 6:00 AM PT</div>
@@ -217,24 +217,9 @@ export default function SchedulePage() {
             </label>
           </div>
 
-          {/* Info Box */}
-          {enabled && (
-            <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-start">
-                <svg className="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div className="text-sm text-blue-800">
-                  <strong>Next generation:</strong> Your podcast will be automatically generated daily at{" "}
-                  {formatTimeDisplay(time)} ({TIMEZONES.find((tz) => tz.value === timezone)?.label})
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Success Message */}
           {showSuccess && (
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center text-green-800">
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -246,7 +231,7 @@ export default function SchedulePage() {
 
           {/* Error Message */}
           {updateMutation.isError && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <div className="text-red-800">
                 Failed to update schedule. Please try again.
               </div>
@@ -255,13 +240,28 @@ export default function SchedulePage() {
 
           {/* Saving Indicator */}
           {updateMutation.isPending && (
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center text-blue-800">
                 <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 Saving...
+              </div>
+            </div>
+          )}
+
+          {/* Info Box */}
+          {enabled && (
+            <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start">
+                <svg className="w-5 h-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="text-sm text-blue-800">
+                  <strong>Next generation:</strong> Your podcast will be automatically generated daily at{" "}
+                  {formatTimeDisplay(time)} ({TIMEZONES.find((tz) => tz.value === timezone)?.label})
+                </div>
               </div>
             </div>
           )}
