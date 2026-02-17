@@ -149,15 +149,15 @@ async def generate_audio_overview(
                 audio_format=audio_format,
             )
 
-            # Wait for completion (with extended timeout)
-            # Note: Audio generation can take 10-20 minutes for longer content
+            # Wait for completion (with timeout)
+            # Note: Audio generation can take up to 10 minutes
             print(f"[NotebookLM] Waiting for audio generation to complete (notebook: {notebook_id})")
 
             try:
                 final_status = await client.artifacts.wait_for_completion(
                     notebook_id=notebook_id,
                     task_id=generation_status.task_id,
-                    timeout=1200,  # 20 min timeout (extended from 10)
+                    timeout=600,  # 10 min timeout
                 )
 
                 if final_status.is_failed:
