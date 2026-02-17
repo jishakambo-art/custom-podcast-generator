@@ -149,15 +149,42 @@ async def generate_podcast_for_user(
             )
             return
 
+        # Prepare detailed sources for storage
+        detailed_sources = {
+            "rss_feeds": len(rss_entries),
+            "news_topics": len(news_summaries),
+            "total_items": len(content_items),
+            "details": {
+                "rss": [
+                    {
+                        "feed_url": feed_url,
+                        "feed_name": next((s["name"] for s in rss_sources if s["url"] == feed_url), feed_url),
+                        "entries": [
+                            {
+                                "title": entry.get("title", "Untitled"),
+                                "summary": entry.get("summary", "")[:300],  # First 300 chars
+                                "link": entry.get("link", ""),
+                            }
+                            for entry in entries[:5]  # Limit to first 5 entries per feed
+                        ]
+                    }
+                    for feed_url, entries in rss_entries.items()
+                ],
+                "topics": [
+                    {
+                        "topic": topic,
+                        "summary": summary[:500],  # First 500 chars of summary
+                    }
+                    for topic, summary in news_summaries.items()
+                ],
+            }
+        }
+
         # Success!
         update_status(
             "complete",
             notebook_id=notebook_id,
-            sources_used={
-                "rss_feeds": len(rss_entries),
-                "news_topics": len(news_summaries),
-                "total_items": len(content_items),
-            },
+            sources_used=detailed_sources,
         )
 
     except Exception as e:

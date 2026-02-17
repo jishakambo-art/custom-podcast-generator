@@ -187,11 +187,19 @@ export default function GenerationDetailPage({
 
             {generation.sources_used && (
               <div className="bg-white p-6 rounded-lg border">
-                <h2 className="font-semibold mb-4 text-gray-900">Sources Used</h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="font-semibold text-gray-900">Sources Used</h2>
+                  <Link
+                    href={`/generations/${params.id}/sources`}
+                    className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm"
+                  >
+                    View Sources
+                  </Link>
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <p className="text-2xl font-bold text-gray-900">
-                      {generation.sources_used.substack_posts}
+                      {generation.sources_used.substack_posts || 0}
                     </p>
                     <p className="text-sm text-gray-700">Substack Posts</p>
                   </div>
