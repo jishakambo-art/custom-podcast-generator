@@ -10,6 +10,7 @@ import { useAuth } from "@/lib/auth-context";
 interface RSSEntry {
   title: string;
   summary: string;
+  content?: string;
   link: string;
 }
 
@@ -118,20 +119,25 @@ export default function SourcesPage({
                               key={entryIdx}
                               className="pl-4 border-l-2 border-gray-200"
                             >
-                              <h4 className="font-medium text-gray-900 mb-1">
+                              <h4 className="font-medium text-gray-900 mb-2">
                                 {entry.title}
                               </h4>
                               {entry.summary && (
-                                <p className="text-sm text-gray-700 mb-2">
+                                <div className="text-sm text-gray-700 mb-2 whitespace-pre-wrap">
                                   {entry.summary}
-                                </p>
+                                </div>
+                              )}
+                              {entry.content && (
+                                <div className="text-sm text-gray-700 mb-2 whitespace-pre-wrap prose prose-sm max-w-none">
+                                  {entry.content}
+                                </div>
                               )}
                               {entry.link && (
                                 <a
                                   href={entry.link}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                                  className="text-sm text-blue-600 hover:text-blue-800 hover:underline inline-block mt-2"
                                 >
                                   Read more →
                                 </a>
@@ -164,7 +170,7 @@ export default function SourcesPage({
                       <h3 className="font-semibold text-gray-900 mb-3">
                         {topic.topic}
                       </h3>
-                      <div className="prose prose-sm max-w-none text-gray-700">
+                      <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap">
                         {topic.summary}
                       </div>
                     </div>

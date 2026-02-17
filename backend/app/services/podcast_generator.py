@@ -162,7 +162,8 @@ async def generate_podcast_for_user(
                         "entries": [
                             {
                                 "title": entry.get("title", "Untitled"),
-                                "summary": entry.get("summary", "")[:300],  # First 300 chars
+                                "summary": entry.get("summary", ""),  # Full summary
+                                "content": entry.get("content", ""),  # Full content
                                 "link": entry.get("link", ""),
                             }
                             for entry in entries[:5]  # Limit to first 5 entries per feed
@@ -173,7 +174,7 @@ async def generate_podcast_for_user(
                 "topics": [
                     {
                         "topic": topic,
-                        "summary": summary[:500],  # First 500 chars of summary
+                        "summary": summary,  # Full summary
                     }
                     for topic, summary in news_summaries.items()
                 ],
