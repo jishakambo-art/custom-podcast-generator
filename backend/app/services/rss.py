@@ -8,7 +8,7 @@ async def fetch_rss_feed(url: str) -> List[Dict[str, Any]]:
     """
     Fetch and parse an RSS feed.
 
-    Returns list of entries from the last 24 hours.
+    Returns only the latest entry (most recent) from the feed.
     """
     async with httpx.AsyncClient() as client:
         response = await client.get(url, timeout=15.0)
@@ -16,31 +16,27 @@ async def fetch_rss_feed(url: str) -> List[Dict[str, Any]]:
 
     feed = feedparser.parse(content)
 
-    entries = []
-    cutoff = datetime.utcnow() - timedelta(hours=24)
+    # Get only the first (most recent) entry if available
+    if not feed.entries:
+        return []
 
-    for entry in feed.entries:
-        # Parse published date
-        published = None
-        if hasattr(entry, "published_parsed") and entry.published_parsed:
-            published = datetime(*entry.published_parsed[:6])
-        elif hasattr(entry, "updated_parsed") and entry.updated_parsed:
-            published = datetime(*entry.updated_parsed[:6])
+    entry = feed.entries[0]  # Most recent entry
 
-        # Filter to last 24 hours if we have a date
-        if published and published < cutoff:
-            continue
+    # Parse published date
+    published = None
+    if hasattr(entry, "published_parsed") and entry.published_parsed:
+        published = datetime(*entry.published_parsed[:6])
+    elif hasattr(entry, "updated_parsed") and entry.updated_parsed:
+        published = datetime(*entry.updated_parsed[:6])
 
-        entries.append({
-            "title": entry.get("title", ""),
-            "link": entry.get("link", ""),
-            "summary": entry.get("summary", ""),
-            "content": entry.get("content", [{}])[0].get("value", "") if entry.get("content") else "",
-            "published": published.isoformat() if published else None,
-            "author": entry.get("author", ""),
-        })
-
-    return entries
+    return [{
+        "title": entry.get("title", ""),
+        "link": entry.get("link", ""),
+        "summary": entry.get("summary", ""),
+        "content": entry.get("content", [{}])[0].get("value", "") if entry.get("content") else "",
+        "published": published.isoformat() if published else None,
+        "author": entry.get("author", ""),
+    }]
 
 
 async def fetch_multiple_feeds(urls: List[str]) -> Dict[str, List[Dict[str, Any]]]:

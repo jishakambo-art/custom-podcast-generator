@@ -166,7 +166,7 @@ async def generate_podcast_for_user(
                                 "content": entry.get("content", ""),  # Full content
                                 "link": entry.get("link", ""),
                             }
-                            for entry in entries[:5]  # Limit to first 5 entries per feed
+                            for entry in entries  # Only latest entry per feed
                         ]
                     }
                     for feed_url, entries in rss_entries.items()
