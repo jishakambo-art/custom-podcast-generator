@@ -231,7 +231,8 @@ def save_notebooklm_credentials(user_id: str, credentials: Dict) -> Dict:
     }
 
     # Upsert: insert if doesn't exist, update if exists
-    response = client.table("user_credentials").upsert(data).execute()
+    # IMPORTANT: Specify on_conflict='user_id' to match on the unique constraint
+    response = client.table("user_credentials").upsert(data, on_conflict="user_id").execute()
     return response.data[0]
 
 
