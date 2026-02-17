@@ -132,23 +132,6 @@ async def generate_podcast_for_user(
         notebook_id = notebook_result["notebook_id"]
         print(f"[GENERATION {generation_id}] Notebook created: {notebook_id}")
 
-        # Generate audio
-        print(f"[GENERATION {generation_id}] Starting audio generation (may take up to 10 minutes)...")
-        audio_result = await generate_audio_overview(
-            notebook_id=notebook_id,
-            user_id=user_id,
-            format="deep-dive",
-        )
-        print(f"[GENERATION {generation_id}] Audio generation result: {audio_result.get('status')}")
-
-        if audio_result["status"] == "error":
-            update_status(
-                "failed",
-                error=audio_result.get("error", "Failed to generate audio"),
-                notebook_id=notebook_id,
-            )
-            return
-
         # Prepare detailed sources for storage
         detailed_sources = {
             "rss_feeds": len(rss_entries),
@@ -181,11 +164,22 @@ async def generate_podcast_for_user(
             }
         }
 
-        # Success!
+        # Mark as complete immediately - audio generation continues in background
         update_status(
             "complete",
             notebook_id=notebook_id,
             sources_used=detailed_sources,
+        )
+        print(f"[GENERATION {generation_id}] Marked as complete. Audio generation will continue in NotebookLM.")
+
+        # Trigger audio generation in background (fire and forget)
+        # Audio will be available in NotebookLM app when it completes
+        asyncio.create_task(
+            generate_audio_overview(
+                notebook_id=notebook_id,
+                user_id=user_id,
+                format="deep-dive",
+            )
         )
 
     except Exception as e:
