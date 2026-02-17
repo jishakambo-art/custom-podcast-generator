@@ -67,7 +67,7 @@ async def get_schedule(
         # Return defaults
         return SchedulePreferences(
             daily_generation_enabled=False,
-            generation_time="07:00",
+            generation_time="06:00",  # 6am PT to match cron job
             timezone="America/Los_Angeles",
         )
 

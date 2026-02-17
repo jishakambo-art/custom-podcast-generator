@@ -91,7 +91,7 @@ def create_user_preferences(user_id: str) -> Dict:
         "language": "en",
         "timezone": "America/Los_Angeles",
         "daily_generation_enabled": False,
-        "generation_time": "07:00:00",
+        "generation_time": "06:00:00",  # 6am PT to match cron job
     }
     response = client.table("user_preferences").insert(data).execute()
     return response.data[0]
@@ -105,11 +105,19 @@ def update_user_preferences(user_id: str, updates: Dict) -> Dict:
     updates.pop("user_id", None)
     updates["updated_at"] = datetime.utcnow().isoformat()
 
+    print(f"[DB] update_user_preferences - user_id: {user_id}, updates: {updates}")
+
     # Upsert: insert if doesn't exist, update if exists
-    response = client.table("user_preferences").upsert({
-        "user_id": user_id,
-        **updates
-    }).execute()
+    # IMPORTANT: Specify on_conflict='user_id' to match on the unique constraint
+    response = client.table("user_preferences").upsert(
+        {
+            "user_id": user_id,
+            **updates
+        },
+        on_conflict="user_id"  # Match on user_id unique constraint
+    ).execute()
+
+    print(f"[DB] update_user_preferences - response: {response.data}")
 
     return response.data[0]
 
