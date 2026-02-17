@@ -105,6 +105,10 @@ def update_user_preferences(user_id: str, updates: Dict) -> Dict:
     updates.pop("user_id", None)
     updates["updated_at"] = datetime.utcnow().isoformat()
 
+    # Convert time objects to string format for JSON serialization
+    if "generation_time" in updates and isinstance(updates["generation_time"], time):
+        updates["generation_time"] = updates["generation_time"].strftime("%H:%M:%S")
+
     print(f"[DB] update_user_preferences - user_id: {user_id}, updates: {updates}")
 
     # Upsert: insert if doesn't exist, update if exists
