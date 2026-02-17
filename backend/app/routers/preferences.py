@@ -61,15 +61,16 @@ async def get_schedule(
     """Get daily generation schedule preferences."""
     prefs = db.get_user_preferences(user_id)
 
-    print(f"[SCHEDULE GET] User {user_id} - Retrieved preferences: daily_enabled={prefs.get('daily_generation_enabled')}, time={prefs.get('generation_time')}")
-
     if not prefs:
+        print(f"[SCHEDULE GET] User {user_id} - No preferences found, returning defaults")
         # Return defaults
         return SchedulePreferences(
             daily_generation_enabled=False,
             generation_time="06:00",  # 6am PT to match cron job
             timezone="America/Los_Angeles",
         )
+
+    print(f"[SCHEDULE GET] User {user_id} - Retrieved preferences: daily_enabled={prefs.get('daily_generation_enabled')}, time={prefs.get('generation_time')}")
 
     # Convert time object to HH:MM string
     gen_time = prefs.get("generation_time", Time(6, 0))
@@ -119,10 +120,11 @@ async def update_schedule(
 
     print(f"[SCHEDULE PUT] Updating with data: {update_data}")
     updated_prefs = db.update_user_preferences(user_id, update_data)
-    print(f"[SCHEDULE PUT] After update - daily_enabled={updated_prefs.get('daily_generation_enabled')}")
 
     if not updated_prefs:
         raise HTTPException(status_code=404, detail="Preferences not found")
+
+    print(f"[SCHEDULE PUT] After update - daily_enabled={updated_prefs.get('daily_generation_enabled')}")
 
     # Return formatted response
     gen_time = updated_prefs.get("generation_time", Time(6, 0))
