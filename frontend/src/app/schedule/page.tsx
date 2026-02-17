@@ -73,10 +73,13 @@ export default function SchedulePage() {
     },
   });
 
-  const handleSave = () => {
-    console.log("[Schedule] Saving with enabled:", enabled);
+  const handleToggle = (newEnabled: boolean) => {
+    console.log("[Schedule] Toggle changed to:", newEnabled);
+    setEnabled(newEnabled);
+
+    // Auto-save when toggle changes
     updateMutation.mutate({
-      daily_generation_enabled: enabled,
+      daily_generation_enabled: newEnabled,
       generation_time: "06:00", // Fixed at 6am PT (when cron runs)
       timezone: "America/Los_Angeles", // Fixed at Pacific Time
     });
@@ -196,17 +199,18 @@ export default function SchedulePage() {
               <div>
                 <div className="font-medium text-gray-900 mb-1">Schedule Daily at 6:00 AM PT</div>
                 <div className="text-sm text-gray-600">
-                  Automatically generate a podcast every day at 6:00 AM Pacific Time
+                  Toggle to enable or disable daily podcast generation at 6:00 AM Pacific Time
                 </div>
               </div>
               <div className="relative">
                 <input
                   type="checkbox"
                   checked={enabled}
-                  onChange={(e) => setEnabled(e.target.checked)}
+                  onChange={(e) => handleToggle(e.target.checked)}
+                  disabled={updateMutation.isPending}
                   className="sr-only peer"
                 />
-                <div className="w-14 h-8 bg-gray-300 rounded-full peer-checked:bg-blue-600 transition peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-offset-2">
+                <div className="w-14 h-8 bg-gray-300 rounded-full peer-checked:bg-blue-600 transition peer-focus:ring-2 peer-focus:ring-blue-500 peer-focus:ring-offset-2 peer-disabled:opacity-50">
                   <div className="absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition peer-checked:translate-x-6"></div>
                 </div>
               </div>
@@ -230,33 +234,37 @@ export default function SchedulePage() {
 
           {/* Success Message */}
           {showSuccess && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center text-green-800">
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                Schedule saved successfully!
+                Schedule updated successfully!
               </div>
             </div>
           )}
 
           {/* Error Message */}
           {updateMutation.isError && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
               <div className="text-red-800">
-                Failed to save schedule. Please try again.
+                Failed to update schedule. Please try again.
               </div>
             </div>
           )}
 
-          {/* Save Button */}
-          <button
-            onClick={handleSave}
-            disabled={updateMutation.isPending}
-            className="w-full px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
-          >
-            {updateMutation.isPending ? "Saving..." : "Save Schedule"}
-          </button>
+          {/* Saving Indicator */}
+          {updateMutation.isPending && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center text-blue-800">
+                <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Saving...
+              </div>
+            </div>
+          )}
         </div>
 
         {/* How it Works */}
