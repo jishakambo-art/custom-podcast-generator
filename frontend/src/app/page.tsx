@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getSchedulePreferences, updateSchedulePreferences, triggerGeneration } from "@/lib/api";
 
+// Admin email - only this user sees admin features
+const ADMIN_EMAIL = "iamjishak@gmail.com";
+
 export default function Home() {
   const { user, loading, signOut } = useAuth();
   const router = useRouter();
@@ -80,7 +83,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-xl font-bold text-gray-900">DailyBrief 🎙️</h1>
           <div className="flex items-center gap-2">
-            {user.email === "iamjishak@gmail.com" && (
+            {user?.email && user.email === ADMIN_EMAIL && (
               <Link
                 href="/admin/usage"
                 className="text-sm text-purple-600 hover:text-purple-700 font-medium px-4 py-2 rounded-lg hover:bg-purple-50 transition"
