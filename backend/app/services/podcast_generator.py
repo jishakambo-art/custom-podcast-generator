@@ -8,6 +8,7 @@ This service coordinates:
 4. Updating generation status
 """
 
+import asyncio
 from datetime import datetime
 from typing import Optional
 
