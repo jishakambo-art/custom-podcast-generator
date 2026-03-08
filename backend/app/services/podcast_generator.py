@@ -8,7 +8,6 @@ This service coordinates:
 4. Updating generation status
 """
 
-import asyncio
 from datetime import datetime
 from typing import Optional
 
@@ -165,23 +164,22 @@ async def generate_podcast_for_user(
             }
         }
 
-        # Mark as complete immediately - audio generation continues in background
+        # Mark as complete immediately (notebook is ready in NotebookLM)
         update_status(
             "complete",
             notebook_id=notebook_id,
             sources_used=detailed_sources,
         )
-        print(f"[GENERATION {generation_id}] Marked as complete. Audio generation will continue in NotebookLM.")
+        print(f"[GENERATION {generation_id}] Marked as complete. Triggering audio generation...")
 
-        # Trigger audio generation in background (fire and forget)
-        # Audio will be available in NotebookLM app when it completes
-        asyncio.create_task(
-            generate_audio_overview(
-                notebook_id=notebook_id,
-                user_id=user_id,
-                format="deep-dive",
-            )
+        # Trigger audio generation - already in a background task so await directly
+        # Status is already "complete" so this won't block the UI
+        await generate_audio_overview(
+            notebook_id=notebook_id,
+            user_id=user_id,
+            format="deep-dive",
         )
+        print(f"[GENERATION {generation_id}] Audio generation triggered successfully.")
 
     except Exception as e:
         print(f"[GENERATION {generation_id}] ===== GENERATION FAILED =====")
